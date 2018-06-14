@@ -1,8 +1,8 @@
 /*
 * @Author: Tom
 * @Date:   2018-06-12 11:59:36
-* @Last Modified by:   Tom
-* @Last Modified time: 2018-06-12 12:11:55
+* @Last Modified by:   TomChen
+* @Last Modified time: 2018-06-14 11:21:28
 */
 /*
 * @Author: TomChen
@@ -41,9 +41,28 @@ var server = http.createServer(function(req,res){
 			name:'五等奖',
 		},									
 	];
-	var index = Math.round(0 + (arr.length)*Math.random());
+	var index = getRandomNum(0,arr.length-1);
+	var num = getRandomNum(1000,9999);
+	
+	arr[index].name = num+arr[index].name;
+
 	var strObj = JSON.stringify(arr[index]);
-	res.end(strObj)
+
+	var msg  = res.socket.remoteAddress+':::'+arr[index].name+'\n';
+	
+	fs.writeFile('test.txt',msg,{flag:'a'},(err)=>{
+		if(err){
+			console.log('write err::',err);
+			res.end('{"name":"不好意思,我走神了,再来一次吧"}');
+		}else{
+			console.log('write ok');
+			res.end(strObj);
+		}
+	})
+	
+	function getRandomNum(min,max){
+		return Math.round(min + (max-min)*Math.random())
+	}
 });
 
 server.listen(3000,'127.0.0.1',function(){
